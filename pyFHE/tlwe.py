@@ -4,25 +4,24 @@ from .key import SecretKey
 
 mu = 2**29
 
-def bootsSymEncrypt(p,key):
+def bootsSymEncrypt(p,sk:SecretKey):
     plaintextlength = len(p)
-    a=np.zeros((plaintextlength, key.params.n), dtype = np.int32)
-    b=np.zeros(plaintextlength, dtype = np.int32)
+    c = np.empty((plaintextlength,sk.params.n+1),dtype = np.uint32)
     for i in range(plaintextlength):
         if p[i] == 0:
-            a[i],b[i] = lweSymEncrypt(-mu,key)
+            c[i] = lweSymEncrypt(-mu,sk.params.alpha,sk.key.tlwe)
         else:
-            a[i],b[i] = lweSymEncrypt(mu,key)
-    return np.array([a,b])
+            c[i] = lweSymEncrypt(mu,sk.params.alpha,sk.key.tlwe)
+    return c
 
 def bootsSymDecrypt(c,sk):
-    ciphertextlength = len(c[0])
-    return np.array([lweSymDecrypt(c[0][i],c[1][i],sk.key) for i in range(ciphertextlength)])
+    ciphertextlength = len(c)
+    return np.array([lweSymDecrypt(c[i],sk.key.tlwe) for i in range(ciphertextlength)])
 
-def lweSymEncrypt(p,key:SecretKey):
-    a = np.random.randint(-2**31,2**31 ,size = key.params.n, dtype = np.int32)
-    b = gaussian32(p,key.params.alpha,1)[0] + np.dot(a,key.key.tlwe)
-    return a,b
+def lweSymEncrypt(p,alpha,key):
+    a = np.random.randint(0,2**32 ,size = len(key), dtype = np.uint32)
+    b = gaussian32(p,alpha,1)[0] + np.dot(a,key)
+    return np.append(a,b)
 
-def lweSymDecrypt(ca,cb,key:SecretKey):
-    return np.int32((1 + np.sign(cb - np.dot(ca,key.tlwe)))/2)
+def lweSymDecrypt(c,key):
+    return np.uint32((1 + np.sign(np.int32(c[len(key)] - np.dot(c[:len(key)],key))))/2)

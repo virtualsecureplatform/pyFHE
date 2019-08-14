@@ -16,4 +16,4 @@ def TwistIFFT(a,twist):
     return np.append(np.real(b),np.imag(b))
 
 def PolyMul(a,b,twist):
-    return np.int32(TwistIFFT(np.multiply(TwistFFT(a,twist),TwistFFT(b,twist)),twist) % (2**32))
+    return np.uint32(TwistIFFT(np.multiply(TwistFFT(a,twist),TwistFFT(b,twist)),twist) % (2**32))

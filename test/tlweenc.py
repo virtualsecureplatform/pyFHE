@@ -1,5 +1,5 @@
-from pyFHE import tlwe
+from pyFHE import key,tlwe
 
-sk = tlwe.SecretKey(500,2**(-9))
-cb,ca = tlwe.bootsSymEncrypt([0,1],sk)
-print (tlwe.bootsSymDecrypt(cb,ca,sk))
+sk = key.SecretKey(500,2**(-9),1024,2,512,2**(-24))
+c = tlwe.bootsSymEncrypt([0,1],sk)
+print (tlwe.bootsSymDecrypt(c,sk))
