@@ -6,6 +6,10 @@ class lweKey:
         self.tlwe = np.random.randint(2,size = n,dtype = np.uint32)
         self.trlwe = np.random.randint(2,size = N, dtype = np.uint32)
 
+class CloudKey:
+    def __init__(self):
+        self.KS = None
+
 class lweParams:
     def __init__(self,n:int,alpha:float,N:int,l:int,Bg:int,bkalpha:float):
         self.n = n
