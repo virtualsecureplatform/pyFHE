@@ -1,7 +1,6 @@
-import numpy as np
-from .key import SecretKey
 from .mulfft import PolyMul
 from .utils import gaussian32,dtot32
+import numpy as np
 
 def trlweSymEncrypt(p,alpha,key,twist):
     a = np.random.randint(0,2**32 ,size = len(key), dtype = np.uint32)
