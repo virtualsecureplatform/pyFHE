@@ -1,10 +1,10 @@
 import numpy as np
+from secrets import randbits
 from .utils import gaussian32,dtot32
-from .key import SecretKey
 
 mu = 2**-3
 
-def bootsSymEncrypt(p,sk:SecretKey):
+def bootsSymEncrypt(p,sk):
     plaintextlength = len(p)
     c = np.empty((plaintextlength,sk.params.n+1),dtype = np.uint32)
     for i in range(plaintextlength):
@@ -19,7 +19,7 @@ def bootsSymDecrypt(c,sk):
     return np.array([tlweSymDecrypt(c[i],sk.key.tlwe) for i in range(ciphertextlength)])
 
 def tlweSymEncrypt(p,alpha,key):
-    a = np.random.randint(0,2**32 ,size = len(key), dtype = np.uint32)
+    a = np.array([randbits(32) for i in range(len(key))], dtype = np.uint32)
     b = gaussian32(dtot32(p),alpha,1)[0] + np.dot(a,key)
     return np.append(a,b)
 

@@ -5,7 +5,7 @@ from .utils import dtot32
 
 #Gadget Decomposition.
 def Decomposition(r,params):
-    temp = np.int32(np.round(np.multiply.outer(params.decb,r + params.offset)%params.Bg - params.Bg//2))
+    temp = np.int32(np.floor(np.multiply.outer(params.decb,r + params.offset)%params.Bg)) - params.Bg//2 #DOING FLOOR IS IMPORTANT.
     return np.concatenate([temp[:,0],temp[:,1]])
 
 def trgswSymEncrypt(p, alpha, h, key, twist):

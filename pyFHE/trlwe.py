@@ -1,9 +1,10 @@
 from .mulfft import PolyMul
 from .utils import gaussian32,dtot32
+from secrets import randbits
 import numpy as np
 
 def trlweSymEncrypt(p,alpha,key,twist):
-    a = np.random.randint(0,2**32 ,size = len(key), dtype = np.uint32)
+    a = np.array([randbits(32) for i in range(len(key))], dtype = np.uint32)
     b = gaussian32(dtot32(p),alpha,len(key)) 
     b += PolyMul(a,key,twist)
     return np.array([a,b])
