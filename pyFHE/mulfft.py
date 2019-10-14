@@ -8,12 +8,12 @@ def TwistGen(N):
 
 def TwistFFT(a,twist):
     Ns2 = len(twist)
-    b = np.array(np.int32(a),dtype = np.double)
+    b = np.double(a)
     return np.fft.fft(np.multiply((b[:Ns2]+1j*b[Ns2:2*Ns2]),twist))
 
 def TwistIFFT(a,twist):
     b = np.multiply(np.fft.ifft(a),np.conjugate(twist))
     return np.append(np.real(b),np.imag(b))
 
-def PolyMul(a,b,twist):
-    return np.uint32(np.round(TwistIFFT(np.multiply(TwistFFT(a,twist),TwistFFT(b,twist)),twist) % (2**32)))
+def PolyMul(a,b,twist): #a or b in R and other in T
+    return np.uint32(np.round(TwistIFFT(np.multiply(TwistFFT(np.int32(a),twist),TwistFFT(np.int32(b),twist)),twist))%2**32)

@@ -4,12 +4,13 @@ from pyFHE.key import SecretKey
 from pyFHE.utils import dtot32
 import numpy as np
 
-sk = SecretKey(500,2**(-9),2,2,512,2**(-27))
-c = trlweSymEncrypt(np.array([2**-3,-2**-3]),2**(-24),sk.key.trlwe,sk.params.twist)
-cdec = Decomposition(c,sk.params)
-rec = dtot32(np.array([cdec[0] * sk.params.h[0] + cdec[1] * sk.params.h[1],cdec[2] * sk.params.h[0] + cdec[3] * sk.params.h[1]]))
-print(sk.params.h)
-print(c)
-print(cdec)
-print(rec)
-print(trlweSymDecrypt(rec,sk.key.trlwe,sk.params.twist))
+for i in range(1000):
+    sk = SecretKey(500,2**(-7),1024,2,1024,3.73e-9,8,2,2.43e-5)
+    p = np.random.randint(0,2,size = sk.params.N,dtype = np.uint32)
+    c = trlweSymEncrypt((2*p-1)*2**-3,sk.params.alpha,sk.key.trlwe,sk.params.twist)
+    cdec = Decomposition(c,sk.params)
+    h = dtot32(sk.params.h)
+    rec = np.array([cdec[0] * h[0] + cdec[1] * h[1],cdec[2] * h[0] + cdec[3] * h[1]])
+    if np.any(trlweSymDecrypt(rec,sk.key.trlwe,sk.params.twist) != p): 
+        print(i)
+        break
