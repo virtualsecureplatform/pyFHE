@@ -1,6 +1,7 @@
 from .detwfa import CMUXFFT
+from .keyswitch import IdentityKeySwitch
 from .trlwe import SampleExtractIndex,trlweSymEncrypt,trlweSymDecrypt
-from .key import lweParams
+from .key import lweParams,CloudKey
 from .utils import dtot32
 import numpy as np
 
@@ -22,9 +23,12 @@ def BlindRotateFFT(bkfft,t:np.ndarray, r:np.ndarray,params:lweParams):#t is TLWE
         acc = CMUXFFT(bkfft[i],np.array([PolynomialMulByXai(acc[0],bara[i],params.N),PolynomialMulByXai(acc[1],bara[i],params.N)]),acc,params)
     return acc
 
-def GateBootstrappingTLWE2TLWEFFT(t,bkfft,params,key):
-    testvec = np.array([np.zeros(params.N),np.full(params.N,dtot32(2**-3))]) #This is same as original implemetation of TFHE.
-    return SampleExtractIndex(BlindRotateFFT(bkfft,t,testvec,params),0)
+def GateBootstrappingTLWE2TLWEFFT(t,ck:CloudKey):
+    testvec = np.array([np.zeros(ck.params.N),np.full(ck.params.N,dtot32(2**-3))]) #This is same as original implemetation of TFHE.
+    return SampleExtractIndex(BlindRotateFFT(ck.bkfft,t,testvec,ck.params),0)
+
+def GateBootstrappingFFT(tlwe,ck):
+    return IdentityKeySwitch(GateBootstrappingTLWE2TLWEFFT(tlwe,ck),ck)
 
 #These are not optimized functions. Just for making reader easier to understand the algorithm.
 # def BlindRotate(bk,t:np.ndarray, r:np.ndarray,params:lweParams):#t is TLWE and r is TRLWE polynomial to rotate and t is TLWE

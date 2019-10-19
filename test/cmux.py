@@ -6,7 +6,7 @@ import numpy as np
 
 np.set_printoptions(threshold=2000)
 for i in range(1000):
-    sk = SecretKey(500,2.44e-5,1024,2,10,3.73e-9,8,2,2.44e-5)
+    sk = SecretKey(500,2.44e-5,1024,2,10,3.73e-9,8,8,2.44e-5)
     p0 = np.random.randint(0,2,size = sk.params.N,dtype=np.uint32)
     p1 = np.random.randint(0,2,size = sk.params.N,dtype=np.uint32)
     d0 = trlweSymEncrypt((2*p0 - 1)*2**-3,sk.params.alpha,sk.key.trlwe,sk.params.twist)

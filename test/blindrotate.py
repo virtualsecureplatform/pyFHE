@@ -5,7 +5,7 @@ from pyFHE.gatebootstrapping import BlindRotateFFT
 from pyFHE.utils import dtot32
 import numpy as np
 
-sk = SecretKey(500,2.44e-5,1024,2,1024,3.73e-9,8,2,2.44e-5)
+sk = SecretKey(500,2.44e-5,1024,2,10,3.73e-9,8,2,2.44e-5)
 ck = CloudKey(sk)
 r = trlweSymEncrypt(np.full(sk.params.N,2**-3),0,sk.key.trlwe,sk.params.twist)
 t =  tlweSymEncrypt(-2**-3,sk.params.alpha,sk.key.tlwe)
