@@ -24,12 +24,12 @@ def trgswfftSymEncrypt(p, alpha:float, h, key, twist):
     trgsw = trgswSymEncrypt(p, alpha, h, key, twist)
     return np.array([np.array([TwistFFT(trgsw[i][j],twist) for j in range(2)]) for i in range(2 * len(h))])
 
-def trgswfftExternalProdcut(trgswfft,trlwe,params):
+def trgswfftExternalProduct(trgswfft,trlwe,params):
     decvecfft = DecompositionFFT(trlwe,params)
     # if l is small enough, adding before IFFT doesn't make much noise and reduce number of IFFT which is a very heavy function.
     return np.array([np.uint32(np.round(TwistIFFT(np.sum([np.multiply(decvecfft[i], trgswfft[i][0]) for i in range(2 * params.l)],axis = 0),params.twist))%2**32),np.uint32(np.round(TwistIFFT(np.sum([np.multiply(decvecfft[i], trgswfft[i][1]) for i in range(2 * params.l)], axis = 0),params.twist))%2**32)],dtype = np.uint32)
 
+def trgswExternalProduct(g,r,params):
+    decvec = Decomposition(r,params)
+    return np.array([np.sum([PolyMul(decvec[i], g[i][0],params.twist) for i in range(2 * params.l)],axis = 0),np.sum([PolyMul(decvec[i], g[i][1],params.twist) for i in range(2 * params.l)], axis = 0)],dtype = np.uint32)
 #These are not optimized functions. Just for making reader easier to understand the algorithm.
-# def trgswExternalProdcut(g,r,params):
-#     decvec = Decomposition(r,params)
-#     return np.array([np.sum([PolyMul(decvec[i], g[i][0],params.twist) for i in range(2 * params.l)],axis = 0),np.sum([PolyMul(decvec[i], g[i][1],params.twist) for i in range(2 * params.l)], axis = 0)],dtype = np.uint32)
