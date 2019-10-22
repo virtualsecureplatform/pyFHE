@@ -21,7 +21,7 @@ def trgswSymEncrypt(p, alpha:float, h, key, twist):
     return c
 
 def trgswfftSymEncrypt(p, alpha:float, h, key, twist):
-    trgsw = trgswSymEncrypt(p, alpha, h, key, twist)
+    trgsw = np.int32(trgswSymEncrypt(p, alpha, h, key, twist))
     return np.array([np.array([TwistFFT(trgsw[i][j],twist) for j in range(2)]) for i in range(2 * len(h))])
 
 def trgswfftExternalProduct(trgswfft,trlwe,params):
