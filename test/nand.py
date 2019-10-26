@@ -1,7 +1,7 @@
+
 from pyFHE.tlwe import tlweSymEncrypt,tlweSymDecrypt
 from pyFHE.key import SecretKey,CloudKey
 from pyFHE.gate import HomNAND
-from time import time
 
 import numpy as np
 from concurrent import futures
@@ -14,13 +14,13 @@ def test():
     pb = np.random.binomial(1,0.5)
     ca = tlweSymEncrypt((pa * 2 + -1) * (2**-3),sk.params.alpha,sk.key.tlwe)
     cb = tlweSymEncrypt((pb * 2 + -1) * (2**-3),sk.params.alpha,sk.key.tlwe)
-    start = time()
     res = HomNAND(ca,cb,ck)
-    end = time()
-    print(end - start)
     y = tlweSymDecrypt(res,sk.key.tlwe)
     np.set_printoptions(threshold=2000)
     if (pa&pb)^1 != y:
+        print("FAILED")
+        print(tlweSymDecrypt(np.uint32(np.append(np.zeros(ck.params.n),2**29)) - ca - cb,sk.key.tlwe))
+        print(y)
         exit()
 future_list = []
 test()

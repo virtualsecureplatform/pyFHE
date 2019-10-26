@@ -18,9 +18,6 @@ def test():
         print(i)
         exit()
 future_list = []
-with futures.ProcessPoolExecutor() as executor:
-    for i in range(100):
-        future = executor.submit(fn=test)
-        future_list.append(future)
-    _ = futures.as_completed(fs=future_list)
+for i in range(10):
+    test()
 print('completed.')
