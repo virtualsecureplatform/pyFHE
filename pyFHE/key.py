@@ -8,19 +8,18 @@ class lweKey:
     def __init__(self,n:int, N:int):
         self.tlwe = np.array([randbits(1) for i in range(n)],dtype = np.uint32)
         self.trlwe = np.array([randbits(1) for i in range(N)],dtype = np.uint32)
-
 class lweParams:
-    def __init__(self,n:int,alpha:float,N:int,l:int,Bgbit:int,bkalpha:float,t:int,basebit:int,ksalpha:float):
+    def __init__(self,n,alpha,N,l,Bgbit,bkalpha,t,basebit,ksalpha):
         self.n = n
         self.alpha = alpha
         self.N = N
         self.l = l
-        self.Bg = 1 << Bgbit
+        self.Bg = 2 ** Bgbit
         self.Bgbit = Bgbit
         self.bkalpha = bkalpha
-        self.h = np.array([self.Bg**(-(i+1)) for i in range(l)],dtype = np.double)
-        self.offset = np.uint32(self.Bg/2 * np.sum(2**32 * self.h))
-        self.decb = np.array([(2**(-32)) * (self.Bg**(i+1)) for i in range(l)], dtype = np.double)
+        self.h = [self.Bg**(-(i+1)) for i in range(l)]
+        self.offset = np.uint32(self.Bg/2 * np.sum(2**32 * np.asarray(self.h)))
+        self.decb = [2**(-32) * self.Bg**(i+1) for i in range(l)]
         self.twist = TwistGen(N)
         self.t = t
         self.basebit = basebit
