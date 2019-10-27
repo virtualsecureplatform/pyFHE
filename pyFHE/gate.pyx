@@ -1,41 +1,41 @@
-from .gatebootstrapping import GateBootstrappingFFT, GateBootstrappingTLWE2TLWEFFT
-from .keyswitch import IdentityKeySwitch
-from .key import CloudKey
+from .gatebootstrapping cimport GateBootstrappingFFT, GateBootstrappingTLWE2TLWEFFT
+from .keyswitch cimport IdentityKeySwitch
+from .key cimport CloudKey
 import numpy as np
 cimport numpy as np
 
-cpdef HomNAND(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,ck:CloudKey):
+cpdef HomNAND(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,CloudKey ck):
     return GateBootstrappingFFT(np.uint32(np.append(np.zeros(ck.params.n),2**29)) - ca - cb,ck)
 
-cpdef HomOR(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,ck:CloudKey):
+def HomOR(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,CloudKey ck):
     return GateBootstrappingFFT(np.uint32(np.append(np.zeros(ck.params.n),2**29)) + ca + cb,ck)
 
-cpdef HomAND(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,ck:CloudKey):
+def HomAND(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,CloudKey ck):
     return GateBootstrappingFFT(np.uint32(np.append(np.zeros(ck.params.n),-2**29)) + ca + cb,ck)
 
-cpdef HomXOR(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,ck:CloudKey):
+def HomXOR(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,CloudKey ck):
     return GateBootstrappingFFT(np.uint32(np.append(np.zeros(ck.params.n),2**30)) + 2*(ca + cb),ck)
 
-cpdef HomXNOR(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,ck:CloudKey):
+def HomXNOR(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,CloudKey ck):
     return GateBootstrappingFFT(np.uint32(np.append(np.zeros(ck.params.n),-2**30)) - 2*(ca + cb),ck)
 
-cpdef HomNOT(np.ndarray[np.uint32_t] ca):
+def HomNOT(np.ndarray[np.uint32_t] ca):
     return -ca
 
-cpdef HomNOR(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,ck:CloudKey):
+def HomNOR(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,CloudKey ck):
     return GateBootstrappingFFT(np.uint32(np.append(np.zeros(ck.params.n),-2**29)) - ca - cb,ck)
 
-cpdef HomANDNY(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,ck:CloudKey):
+def HomANDNY(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,CloudKey ck):
     return GateBootstrappingFFT(np.append(np.zeros(ck.params.n),np.uint32(-2**29)) - ca + cb,ck)
 
-cpdef HomANDYN(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,ck:CloudKey):
+def HomANDYN(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,CloudKey ck):
     return GateBootstrappingFFT(np.append(np.zeros(ck.params.n),np.uint32(-2**29)) + ca - cb,ck)
 
-cpdef HomORNY(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,ck:CloudKey):
+def HomORNY(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,CloudKey ck):
     return GateBootstrappingFFT(np.append(np.zeros(ck.params.n),2**29) - ca + cb,ck)
 
-cpdef HomORYN(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,ck:CloudKey):
+def HomORYN(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,CloudKey ck):
     return GateBootstrappingFFT(np.append(np.zeros(ck.params.n),2**29) + ca - cb,ck)
 
-cpdef HomMUX(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,cc,ck):
+def HomMUX(np.ndarray[np.uint32_t] ca,np.ndarray[np.uint32_t] cb,cc,ck):
     return IdentityKeySwitch(np.append(np.zeros(ck.params.n),2**29) + GateBootstrappingTLWE2TLWEFFT(np.append(np.zeros(ck.params.n),np.uint32(-2**29)) + ca + cb,ck) + GateBootstrappingTLWE2TLWEFFT(np.append(np.zeros(ck.params.n),np.uint32(-2**29)) - ca + cc,ck),ck)

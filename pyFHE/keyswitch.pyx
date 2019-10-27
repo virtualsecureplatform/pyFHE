@@ -1,9 +1,9 @@
-from .key import CloudKey
-from .key import lweParams
+from .key cimport CloudKey
+from .lweparams cimport lweParams
 import numpy as np
 cimport numpy as np
 
-cpdef IdentityKeySwitch(np.ndarray[np.uint32_t] tlwe,ck:CloudKey):
+cdef np.ndarray[np.uint32_t] IdentityKeySwitch(np.ndarray[np.uint32_t] tlwe,CloudKey ck):
     cdef np.ndarray[np.uint32_t] aibar = np.uint32(np.round(tlwe[:-1] * 2.0**(ck.params.basebit*ck.params.t -32)))
     cdef np.uint32_t mask = (1<<ck.params.basebit) - 1
     cdef int i,j
