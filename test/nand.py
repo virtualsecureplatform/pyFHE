@@ -4,7 +4,7 @@ from pyFHE.key import SecretKey,CloudKey
 from pyFHE.gate import HomNAND
 
 import numpy as np
-from concurrent import futures
+import time
 
 
 def test():
@@ -14,8 +14,12 @@ def test():
     pb = np.random.binomial(1,0.5)
     ca = tlweSymEncrypt((pa * 2 + -1) * (2**-3),sk.params.alpha,sk.key.tlwe)
     cb = tlweSymEncrypt((pb * 2 + -1) * (2**-3),sk.params.alpha,sk.key.tlwe)
+    res = HomNAND(ca,cb,ck)
+    start = time.time()
     for i in range(10):
         res = HomNAND(ca,cb,ck)
+    end = time.time()
+    print((end-start)/10)
     y = tlweSymDecrypt(res,sk.key.tlwe)
     np.set_printoptions(threshold=2000)
     if (pa&pb)^1 != y:

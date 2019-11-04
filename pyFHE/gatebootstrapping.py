@@ -4,7 +4,6 @@ from .trlwe import SampleExtractIndex,trlweSymEncrypt,trlweSymDecrypt
 from .key import lweParams,CloudKey
 from .utils import dtot32
 import numpy as np
-from numba import jit,u4,i4
 
 def PolynomialMulByXai(poly,a,N):
     if(a==0):

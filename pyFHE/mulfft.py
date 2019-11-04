@@ -1,6 +1,5 @@
 from .utils import dtot32
 import numpy as np
-from numba import jit
 
 #Reference https://math.stackexchange.com/questions/1435448/negacyclic-fft-multiplication
 
