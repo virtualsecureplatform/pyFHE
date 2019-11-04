@@ -1,6 +1,4 @@
 from .utils import dtot32
-
-from pyfftw import FFTW
 import numpy as np
 
 #Reference https://math.stackexchange.com/questions/1435448/negacyclic-fft-multiplication
