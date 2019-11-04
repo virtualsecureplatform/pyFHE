@@ -4,15 +4,26 @@ from .trlwe import SampleExtractIndex,trlweSymEncrypt,trlweSymDecrypt
 from .key import lweParams,CloudKey
 from .utils import dtot32
 import numpy as np
+from numba import jit,u4,i4
 
 def PolynomialMulByXai(poly,a,N):
     if(a==0):
         return poly
     elif(a < N):
-        return np.uint32(np.concatenate([[-poly[i - a + N] for i in range(a)],[poly[i] for i in range(N - a)]]))
+        temp = np.zeros(N,dtype=np.uint32)
+        for i in range(a):
+            temp[i] = -poly[i - a + N]
+        for i in range(a,N):
+            temp[i] = poly[i-a]
+        return temp
     else :
+        temp = np.zeros(N,dtype=np.uint32)
         aa = a-N
-        return np.uint32(np.concatenate([[poly[i - aa + N] for i in range(aa)],[-poly[i] for i in range(N - aa)]]))
+        for i in range(aa):
+            temp[i] = poly[i - aa + N]
+        for i in range(aa,N):
+            temp[i] = -poly[i-aa]
+        return temp
 
 def BlindRotateFFT(bkfft,t:np.ndarray, r:np.ndarray,params:lweParams):#t is TLWE and r is TRLWE polynomial to rotate and t is TLWE
     bara = np.uint32(np.round(np.double(t) * (2**-32 * 2 * params.N)))
