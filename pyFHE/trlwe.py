@@ -3,14 +3,14 @@ from .utils import gaussian32,dtot32
 from secrets import randbits
 import numpy as np
 
-def trlweSymEncrypt(p,alpha,key,twist):
+def trlweSymEncrypt(p,alpha,key,twist,fft,ifft):
     a = np.array([randbits(32) for i in range(len(key))], dtype = np.uint32)
     b = gaussian32(dtot32(p),alpha,len(key)) 
-    b += PolyMul(a,key,twist)
+    b += PolyMul(a,key,twist,fft,ifft)
     return np.array([a,b])
 
-def trlweSymDecrypt(c,key,twist):
-    return (1 + np.sign(np.int32(c[1] - PolyMul(c[0],key,twist))))//2
+def trlweSymDecrypt(c,key,twist,fft,ifft):
+    return (1 + np.sign(np.int32(c[1] - PolyMul(c[0],key,twist,fft,ifft))))//2
 
 def SampleExtractIndex(r,index):
     N = len(r[0])
