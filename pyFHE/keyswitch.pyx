@@ -1,7 +1,7 @@
 import numpy as np
 cimport numpy as np
 
-cpdef inline np.ndarray[np.uint32_t] IdentityKeySwitch(np.ndarray[np.uint32_t] tlwe,ck):
+cpdef np.ndarray[np.uint32_t] IdentityKeySwitch(np.ndarray[np.uint32_t] tlwe,ck):
     cdef np.ndarray[np.uint32_t] aibar = np.uint32(np.round(tlwe[:-1] * 2.0**(ck.params.basebit*ck.params.t -32)))
     cdef np.uint32_t mask = (1<<ck.params.basebit) - 1
     cdef int i,j
