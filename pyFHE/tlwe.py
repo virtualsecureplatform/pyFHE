@@ -24,4 +24,4 @@ def tlweSymEncrypt(p,alpha,key):
     return np.append(a,b)
 
 def tlweSymDecrypt(c,key):
-    return np.uint32((1 + np.sign(np.int32(c[len(key)] - np.dot(c[:len(key)],key))))/2)
+    return (1 + np.sign(np.int32(c[len(key)] - np.dot(c[:len(key)],key))))//2

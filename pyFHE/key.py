@@ -6,12 +6,13 @@ from .trgsw import trgswfftSymEncrypt
 import pyfftw
 
 class lweKey:
-    def __init__(self,n:int, N:int):
+    def __init__(self,n:int, N:int. nbar:int):
         self.tlwe = np.array([randbits(1) for i in range(n)],dtype = np.uint32)
         self.trlwe = np.array([randbits(1) for i in range(N)],dtype = np.uint32)
+        self.lvl2 = np.array([randbits(1) for i in range(nbar)],dtype = np.uint32)
 
 class lweParams:
-    def __init__(self,n:int,alpha:float,N:int,l:int,Bgbit:int,bkalpha:float,t:int,basebit:int,ksalpha:float):
+    def __init__(self,n:int,alpha:float,N:int,l:int,Bgbit:int,bkalpha:float,t:int,basebit:int,ksalpha:float,nbar:int,lbar:int,Bgbitbar:int,bklvl02alpha:float, tbar:int, basebitlvl21:int):
         self.n = n
         self.alpha = alpha
         self.N = N
@@ -27,16 +28,35 @@ class lweParams:
         self.basebit = basebit
         self.ksalpha = ksalpha
 
+        self.nbar = nbar
+        self.lbar = lbar
+        self.Bgbar = 1 << Bgbitbar
+        self.Bgbitbar = Bgbitbar
+        self.bklvl02alpha = bklvl02alpha
+        self.hbar = np.array([self.2.0**(-(i+1)*Bgbitbar) for i in range(lbar)],dtype = np.double)
+        self.offsetlvl2 = np.uint64(self.Bgbar/2 * np.sum(2**64 * self.hbar))
+        self.decblvl2 = np.array([(2**(-64)) * (self.Bgbar**(i+1)) for i in range(lbar)], dtype = np.double)
+        self.tbar = tbar
+        self.twistlvl2 = TwistGen(nabr)
+        self.basebitlvl21 = basebitlvl21
+
 class SecretKey:
-    def __init__(self,n:int,alpha:float,N:int,l:int,Bgbit:int,bkalpha:float,t:int,basebit:int,ksalpha:float): #Modify this to change parameter
-        self.params = lweParams(n,alpha,N,l,Bgbit,bkalpha,t,basebit,ksalpha)
-        self.key = lweKey(n,N)
+    def __init__(self,n:int,alpha:float,N:int,l:int,Bgbit:int,bkalpha:float,t:int,basebit:int,ksalpha:float,nbar:int,lbar:int,Bgbitbar:int,bklvl02alpha:float,tbar:int, basebitlvl21:int): #Modify this to change parameter
+        self.params = lweParams(n,alpha,N,l,Bgbit,bkalpha,t,basebit,ksalpha,nbar,lbar,Bgbitbar,bklvl02alpha,tbar,basebitlvl21)
+        self.key = lweKey(n,N,nbar)
 
 class CloudKey:
     def __init__(self,sk:SecretKey):
         #if k, the decomposed part of the target of keyswitch function, is 0, the value is trivial.
         self.ksk = np.uint32(np.array([[np.concatenate([[np.zeros(sk.params.n +1)],[tlweSymEncrypt(sk.key.trlwe[i] * k * 2.0**(-(j+1)*sk.params.basebit),sk.params.ksalpha,sk.key.tlwe) for k in range(1,2**sk.params.basebit)]]) for j in range(sk.params.t)] for i in range(sk.params.N)]))
+        self.privksk = np.uint32(np.array([[np.concatenate([[np.zeros(sk.params.n +1)],[tlweSymEncrypt(sk.key.trlwe[i] * k * 2.0**(-(j+1)*sk.params.basebit),sk.params.ksalpha,sk.key.lvl2) for k in range(1,2**sk.params.basebit)]]) for j in range(sk.params.t)] for i in range(sk.params.nbar)]))
+
         self.fft  = pyfftw.builders.fft(pyfftw.empty_aligned(sk.params.N//2, dtype='complex128'))
         self.ifft = pyfftw.builders.ifft(pyfftw.empty_aligned(sk.params.N//2, dtype='complex128'))
+        self.fftlvl2  = pyfftw.builders.fft(pyfftw.empty_aligned(sk.params.nbar//2, dtype='complex128'))
+        self.ifftlvl2 = pyfftw.builders.ifft(pyfftw.empty_aligned(sk.params.nbar//2, dtype='complex128'))
+
         self.bkfft = np.array([trgswfftSymEncrypt(np.uint32(np.concatenate([[sk.key.tlwe[i]],np.zeros(sk.params.N - 1)])),sk.params.bkalpha,sk.params.h,sk.key.trlwe,sk.params.twist,self.fft, self.ifft) for i in range(sk.params.n)])
+        self.bklvl02fft = np.array([trgswfftSymEncrypt(np.uint32(np.concatenate([[sk.key.tlwe[i]],np.zeros(sk.params.N - 1)])),sk.params.bklvl02alpha,sk.params.h,sk.key.lvl2,sk.params.twistlvl2,self.fftlvl2, self.ifftlvl2) for i in range(sk.params.n)])
+
         self.params = sk.params
