@@ -13,7 +13,7 @@ def calc_rhs(ck, aibar, mask):
 
     t = ck.ksk[first, second, indices.ravel()]
     t = t.reshape((ck.params.N, ck.params.t, -1))
-    return t.sum(axis=1).sum(axis=0)
+    return t.sum(axis=(0, 1))
 
 
 def IdentityKeySwitch(tlwe, ck: CloudKey):
