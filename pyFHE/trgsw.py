@@ -42,42 +42,15 @@ def trgswfftSymEncrypt(p, alpha: float, h, key, twist):
 
 def trgswfftExternalProduct(trgswfft, trlwe, params):
     decvecfft = DecompositionFFT(trlwe, params)
+
     # if l is small enough, adding before IFFT doesn't make much noise and reduce number of IFFT which is a very heavy function.
-    return np.array(
-        [
-            np.uint32(
-                np.round(
-                    TwistIFFT(
-                        np.sum(
-                            [
-                                np.multiply(decvecfft[i], trgswfft[i][0])
-                                for i in range(2 * params.l)
-                            ],
-                            axis=0,
-                        ),
-                        params.twist,
-                    )
-                )
-                % 2 ** 32
-            ),
-            np.uint32(
-                np.round(
-                    TwistIFFT(
-                        np.sum(
-                            [
-                                np.multiply(decvecfft[i], trgswfft[i][1])
-                                for i in range(2 * params.l)
-                            ],
-                            axis=0,
-                        ),
-                        params.twist,
-                    )
-                )
-                % 2 ** 32
-            ),
-        ],
-        dtype=np.uint32,
-    )
+    t = decvecfft * np.moveaxis(trgswfft, 0, 1)
+    t = np.sum(t, axis=1)
+    t = TwistIFFT(t, params.twist, axis=1)
+    t = np.round(t)
+    t = t % 2 ** 32
+    t = np.uint32(t).reshape(2, -1)
+    return t
 
 
 def trgswExternalProduct(g, r, params):

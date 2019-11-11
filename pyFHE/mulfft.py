@@ -14,9 +14,9 @@ def TwistFFT(a, twist):
     return np.fft.fft(np.multiply((b[:Ns2] + 1j * b[Ns2 : 2 * Ns2]), twist))
 
 
-def TwistIFFT(a, twist):
-    b = np.multiply(np.fft.ifft(a), np.conjugate(twist))
-    return np.append(np.real(b), np.imag(b))
+def TwistIFFT(a, twist, axis=None):
+    b = np.multiply(np.fft.ifft(a, axis=(axis or -1)), np.conjugate(twist))
+    return np.append(np.real(b), np.imag(b), axis=axis)
 
 
 def PolyMul(a, b, twist):  # a or b in R and other in T
