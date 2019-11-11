@@ -10,21 +10,14 @@ def PolynomialMulByXai(poly, a, N):
     if a == 0:
         return poly
     elif a < N:
-        return np.uint32(
-            np.concatenate(
-                [[-poly[i - a + N] for i in range(a)], [poly[i] for i in range(N - a)]]
-            )
-        )
+        l0 = -poly[N - a : N]
+        l1 = poly[0 : N - a]
+        return np.uint32(np.concatenate([l0, l1]))
     else:
         aa = a - N
-        return np.uint32(
-            np.concatenate(
-                [
-                    [poly[i - aa + N] for i in range(aa)],
-                    [-poly[i] for i in range(N - aa)],
-                ]
-            )
-        )
+        l0 = poly[N - aa : N]
+        l1 = -poly[0 : N - aa]
+        return np.uint32(np.concatenate([l0, l1]))
 
 
 def BlindRotateFFT(
