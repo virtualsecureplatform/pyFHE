@@ -14,9 +14,7 @@ def Decomposition(trlwe, params):
 
 def DecompositionFFT(r, params):
     decvec = Decomposition(r, params)
-    return np.array(
-        [TwistFFT(np.int32(decvec[i]), params.twist) for i in range(2 * params.l)]
-    )
+    return TwistFFT(np.int32(decvec), params.twist, dim=2)
 
 
 def trgswSymEncrypt(p, alpha: float, h, key, twist):
