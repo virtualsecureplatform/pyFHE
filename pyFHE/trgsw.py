@@ -42,12 +42,12 @@ def trgswfftExternalProduct(trgswfft, trlwe, params):
     decvecfft = DecompositionFFT(trlwe, params)
 
     # if l is small enough, adding before IFFT doesn't make much noise and reduce number of IFFT which is a very heavy function.
-    t = decvecfft * np.moveaxis(trgswfft, 0, 1)
-    t = np.sum(t, axis=1)
+    t = decvecfft.reshape(4, 1, 512) * trgswfft
+    t = t.sum(axis=0)
     t = TwistIFFT(t, params.twist, axis=1)
     t = np.round(t)
     t = t % 2 ** 32
-    t = np.uint32(t).reshape(2, -1)
+    t = np.uint32(t)
     return t
 
 
