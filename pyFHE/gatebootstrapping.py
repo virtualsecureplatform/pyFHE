@@ -7,17 +7,20 @@ import numpy as np
 
 
 def PolynomialMulByXai(poly, a, N):
+    a = a.item()
     if a == 0:
         return poly
     elif a < N:
         l0 = -poly[N - a : N]
         l1 = poly[0 : N - a]
-        return np.uint32(np.concatenate([l0, l1]))
+        t = np.concatenate([l0, l1])
+        return np.uint32(t)
     else:
         aa = a - N
         l0 = poly[N - aa : N]
         l1 = -poly[0 : N - aa]
-        return np.uint32(np.concatenate([l0, l1]))
+        t = np.concatenate([l0, l1])
+        return np.uint32(t)
 
 
 def BlindRotateFFT(
