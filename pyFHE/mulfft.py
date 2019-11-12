@@ -17,3 +17,6 @@ def TwistIFFT(a, twist, ifft):
 
 def PolyMul(a, b, twist, fft, ifft): #a or b in R and other in T
     return np.uint32(np.round(TwistIFFT(np.multiply(TwistFFT(np.int32(a),twist,fft),TwistFFT(np.int32(b),twist,fft)),twist, ifft))%2**32)
+
+def PolyMullvl2(a, b, twist, fft, ifft): #a or b in R and other in T
+    return np.uint64(np.round(TwistIFFT(np.multiply(TwistFFT(np.int64(a),twist,fft),TwistFFT(np.int64(b),twist,fft)),twist, ifft))%2**64)

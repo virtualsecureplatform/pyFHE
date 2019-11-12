@@ -1,5 +1,5 @@
-from .mulfft import PolyMul
-from .utils import gaussian32,dtot32
+from .mulfft import PolyMul,PolyMullvl2
+from .utils import gaussian32,dtot32,gaussian64,dtot64
 from secrets import randbits
 import numpy as np
 
@@ -7,6 +7,12 @@ def trlweSymEncrypt(p,alpha,key,twist,fft,ifft):
     a = np.array([randbits(32) for i in range(len(key))], dtype = np.uint32)
     b = gaussian32(dtot32(p),alpha,len(key)) 
     b += PolyMul(a,key,twist,fft,ifft)
+    return np.array([a,b])
+
+def trlweSymEncryptlvl2(p,alpha,key,twist,fft,ifft):
+    a = np.array([randbits(64) for i in range(len(key))], dtype = np.uint64)
+    b = gaussian64(dtot64(p),alpha,len(key))
+    b += PolyMullvl2(a,key,twist,fft,ifft)
     return np.array([a,b])
 
 def trlweSymDecrypt(c,key,twist,fft,ifft):

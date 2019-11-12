@@ -48,7 +48,7 @@ cdef inline np.ndarray[np.uint32_t,ndim = 2] BlindRotatelvl02FFT(np.ndarray[np.c
     for i in range(params.n):
         if bara[i] == 0:
             continue 
-        acc = CMUXFFT(bkfft[i],np.array([PolynomialMulByXailvl2(acc[0],bara[i],params.nbar),PolynomialMulByXailvl2(acc[1],bara[i],params.nbar)]),acc,params,fftlvl2,ifftlvl2)
+        acc = CMUXFFT(bkfft[i],np.array([PolynomialMulByXailvl2(acc[0],bara[i],params.nbar),PolynomialMulByXailvl2(acc[1],bara[i],params.nbar)]),acc,params,fft,ifft)
     return acc
 
 

@@ -1,7 +1,7 @@
 import numpy as np
-from .trlwe import trlweSymEncrypt
+from .trlwe import trlweSymEncrypt,trlweSymEncryptlvl2
 from .mulfft import PolyMul,TwistFFT,TwistIFFT
-from .utils import dtot32
+from .utils import dtot32,dtot64
 
 #Gadget Decomposition.
 def Decomposition(trlwe,params):
@@ -28,8 +28,20 @@ def trgswSymEncrypt(p, alpha:float, h, key, twist, fft, ifft):
     c[l:,1] += muh
     return c
 
+def trgswSymEncryptlvl2(p, alpha:float, h, key, twist, fft, ifft):
+    l = len(h)
+    c = np.vstack([[trlweSymEncryptlvl2(np.zeros(len(key)),alpha,key,twist, fft ,ifft)] for i in range(2*l)])
+    muh = dtot64(np.outer(h,p))
+    c[:l,0] += muh
+    c[l:,1] += muh
+    return c
+
 def trgswfftSymEncrypt(p, alpha:float, h, key, twist, fft, ifft):
     trgsw = np.int32(trgswSymEncrypt(p, alpha, h, key, twist,fft,ifft))
+    return np.array([np.array([TwistFFT(trgsw[i][j],twist,fft) for j in range(2)]) for i in range(2 * len(h))])
+
+def trgswfftSymEncryptlvl2(p, alpha:float, h, key, twist, fft, ifft):
+    trgsw = np.int64(trgswSymEncryptlvl2(p, alpha, h, key, twist,fft,ifft))
     return np.array([np.array([TwistFFT(trgsw[i][j],twist,fft) for j in range(2)]) for i in range(2 * len(h))])
 
 def trgswfftExternalProduct(trgswfft,trlwe,params,fft,ifft):
@@ -38,7 +50,7 @@ def trgswfftExternalProduct(trgswfft,trlwe,params,fft,ifft):
     return np.array([np.uint32(np.round(TwistIFFT(np.sum([np.multiply(decvecfft[i], trgswfft[i][0]) for i in range(2 * params.l)],axis = 0),params.twist, ifft))%2**32),np.uint32(np.round(TwistIFFT(np.sum([np.multiply(decvecfft[i], trgswfft[i][1]) for i in range(2 * params.l)], axis = 0),params.twist, ifft))%2**32)],dtype = np.uint32)
 
 def trgswfftExternalProductlvl2(trgswfft,trlwe,params,fft,ifft):
-    decvecfft = DecompositionFFT(trlwe,params,fft)
+    decvecfft = DecompositionFFTlvl2(trlwe,params,fft)
     # if l is small enough, adding before IFFT doesn't make much noise and reduce number of IFFT which is a very heavy function.
     return np.array([np.uint64(np.round(TwistIFFT(np.sum([np.multiply(decvecfft[i], trgswfft[i][0]) for i in range(2 * params.lbar)],axis = 0),params.twistlvl2, ifft))%2**64),np.uint64(np.round(TwistIFFT(np.sum([np.multiply(decvecfft[i], trgswfft[i][1]) for i in range(2 * params.lbar)], axis = 0),params.twistlvl2, ifft))%2**64)],dtype = np.uint64)
 
