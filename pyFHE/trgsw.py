@@ -45,8 +45,6 @@ def trgswfftExternalProduct(trgswfft, trlwe, params):
     t = decvecfft.reshape(4, 1, 512) * trgswfft
     t = t.sum(axis=0)
     t = TwistIFFT(t, params.twist, axis=1)
-    t = np.round(t)
-    t = t % 2 ** 32
     t = np.uint32(t)
     return t
 
