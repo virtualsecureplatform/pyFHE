@@ -36,6 +36,7 @@ class lweParams:
         self.decb = np.array(
             [(2 ** (-32)) * (self.Bg ** (i + 1)) for i in range(l)], dtype=np.double
         )
+        self.decbit = [32 - (p+1) * Bgbit for p in range(l)]
         self.twist = TwistGen(N)
         self.t = t
         self.basebit = basebit
