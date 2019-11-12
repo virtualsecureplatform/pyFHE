@@ -5,11 +5,12 @@ from .utils import dtot32
 
 # Gadget Decomposition.
 def Decomposition(trlwe, params):
-    temp = np.uint32(
-        np.floor(np.multiply.outer(params.decb, trlwe + params.offset) % params.Bg)
-        - params.Bg / 2
-    )  # DOING FLOOR IS IMPORTANT.
-    return np.concatenate([temp[:, 0], temp[:, 1]])
+    t = np.multiply.outer(params.decb, trlwe + params.offset)
+    t = np.floor(t)# DOING FLOOR IS IMPORTANT.
+    t = np.uint32(t)
+    t &= params.Bg - 1
+    t -= params.Bg // 2
+    return np.concatenate([t[:, 0], t[:, 1]])
 
 
 def DecompositionFFT(r, params):
