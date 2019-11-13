@@ -48,27 +48,25 @@ def trgswfftExternalProduct(trgswfft, trlwe, params):
     return t
 
 
-def trgswExternalProduct(g, r, params):
-    decvec = Decomposition(r, params)
-    return np.array(
-        [
-            np.sum(
-                [
-                    PolyMul(decvec[i], g[i][0], params.twist)
-                    for i in range(2 * params.l)
-                ],
-                axis=0,
-            ),
-            np.sum(
-                [
-                    PolyMul(decvec[i], g[i][1], params.twist)
-                    for i in range(2 * params.l)
-                ],
-                axis=0,
-            ),
-        ],
-        dtype=np.uint32,
-    )
-
-
 # These are not optimized functions. Just for making reader easier to understand the algorithm.
+# def trgswExternalProduct(g, r, params):
+#     decvec = Decomposition(r, params)
+#     return np.array(
+#         [
+#             np.sum(
+#                 [
+#                     PolyMul(decvec[i], g[i][0], params.twist)
+#                     for i in range(2 * params.l)
+#                 ],
+#                 axis=0,
+#             ),
+#             np.sum(
+#                 [
+#                     PolyMul(decvec[i], g[i][1], params.twist)
+#                     for i in range(2 * params.l)
+#                 ],
+#                 axis=0,
+#             ),
+#         ],
+#         dtype=np.uint32,
+#     )

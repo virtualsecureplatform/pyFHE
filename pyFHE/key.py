@@ -1,16 +1,16 @@
 import numpy as np
 import pyfftw
 from secrets import randbits
-from .mulfft import TwistGen
+from .mulfft import TwistGen,TwistGenLong
 from .tlwe import tlweSymEncrypt
 from .trgsw import trgswfftSymEncrypt
 
 
 class lweKey:
-    def __init__(self, n: int, N: int):
+    def __init__(self, n: int, N: int, nbar:int):
         self.tlwe = np.array([randbits(1) for i in range(n)], dtype=np.uint32)
         self.trlwe = np.array([randbits(1) for i in range(N)], dtype=np.uint32)
-
+        self.lvl2 = np.array([randbits(1) for i in range(nbar)],dtype = np.uint64)
 
 class lweParams:
     def __init__(
@@ -24,6 +24,7 @@ class lweParams:
         t: int,
         basebit: int,
         ksalpha: float,
+        nbar:int,lbar:int,Bgbitbar:int,bklvl02alpha:float, tbar:int, basebitlvl21:int
     ):
         self.n = n
         self.alpha = alpha
@@ -40,6 +41,19 @@ class lweParams:
         self.basebit = basebit
         self.ksalpha = ksalpha
 
+        self.nbar = nbar
+        self.lbar = lbar
+        self.Bgbar = 1 << Bgbitbar
+        self.Bgbitbar = Bgbitbar
+        self.bklvl02alpha = bklvl02alpha
+        self.hbar = np.array([self.Bgbar**(-(i+1)) for i in range(lbar)],dtype = np.double)
+        self.offset = np.uint32(self.Bg/2 * np.sum(2**32 * self.h))
+        self.offsetlvl2 = np.uint64(self.Bgbar/2 * np.sum(2**64 * self.hbar))
+        self.decblvl2 = np.array([(2**(-64)) * (self.Bgbar**(i+1)) for i in range(lbar)], dtype = np.double)
+        self.tbar = tbar
+        self.twistlvl2 = TwistGen(nbar)
+        self.twistlvl2long = TwistGenLong(nbar)
+        self.basebitlvl21 = basebitlvl21
 
 class SecretKey:
     def __init__(
@@ -53,9 +67,10 @@ class SecretKey:
         t: int,
         basebit: int,
         ksalpha: float,
+        nbar:int,lbar:int,Bgbitbar:int,bklvl02alpha:float, tbar:int, basebitlvl21:int
     ):  # Modify this to change parameter
-        self.params = lweParams(n, alpha, N, l, Bgbit, bkalpha, t, basebit, ksalpha)
-        self.key = lweKey(n, N)
+        self.params = lweParams(n, alpha, N, l, Bgbit, bkalpha, t, basebit, ksalpha,nbar,lbar,Bgbitbar,bklvl02alpha,tbar,basebitlvl21)
+        self.key = lweKey(n, N,nbar)
 
 
 class CloudKey:
