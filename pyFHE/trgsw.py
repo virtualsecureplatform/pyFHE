@@ -11,15 +11,15 @@ def Decomposition(trlwe, params):
     t -= params.Bg // 2
     return np.concatenate([t[:, 0], t[:, 1]])
 
-def DecompositionFFT(r, params, fft):
+def DecompositionFFT(r, params):
     decvec = Decomposition(r, params)
-    return TwistFFT(np.int32(decvec), params.twist, fft, dim=2)
+    return TwistFFT(np.int32(decvec), params.twist, dim=2)
 
 
-def trgswSymEncrypt(p, alpha: float, h, key, twist, fft, ifft):
+def trgswSymEncrypt(p, alpha: float, h, key, twist):
     l = len(h)
     c = np.vstack(
-        [[trlweSymEncrypt(np.zeros(len(key)), alpha, key, twist, fft, ifft)] for i in range(2 * l)]
+        [[trlweSymEncrypt(np.zeros(len(key)), alpha, key, twist)] for i in range(2 * l)]
     )
     muh = dtot32(np.outer(h, p))
     c[:l, 0] += muh
@@ -27,42 +27,41 @@ def trgswSymEncrypt(p, alpha: float, h, key, twist, fft, ifft):
     return c
 
 
-def trgswfftSymEncrypt(p, alpha: float, h, key, twist, fft, ifft):
-    trgsw = np.int32(trgswSymEncrypt(p, alpha, h, key, twist, fft, ifft))
+def trgswfftSymEncrypt(p, alpha: float, h, key, twist):
+    trgsw = np.int32(trgswSymEncrypt(p, alpha, h, key, twist))
     return np.array(
         [
-            np.array([TwistFFT(trgsw[i][j], twist, fft) for j in range(2)])
+            np.array([TwistFFT(trgsw[i][j], twist) for j in range(2)])
             for i in range(2 * len(h))
         ]
     )
 
 
-def trgswfftExternalProduct(trgswfft, trlwe, params, fft, ifft):
-    decvecfft = DecompositionFFT(trlwe, params, fft)
+def trgswfftExternalProduct(trgswfft, trlwe, params):
+    decvecfft = DecompositionFFT(trlwe, params)
 
     # if l is small enough, adding before IFFT doesn't make much noise and reduce number of IFFT which is a very heavy function.
     t = decvecfft.reshape(4, 1, 512) * trgswfft
     t = t.sum(axis=0)
-    print(t.shape)
-    t = TwistIFFT(t, params.twist, ifft, axis=1)
+    t = TwistIFFT(t, params.twist, axis=1)
     t = np.uint32(t)
     return t
 
 
-def trgswExternalProduct(g, r, params, fft, ifft):
+def trgswExternalProduct(g, r, params):
     decvec = Decomposition(r, params)
     return np.array(
         [
             np.sum(
                 [
-                    PolyMul(decvec[i], g[i][0], params.twist, fft, ifft)
+                    PolyMul(decvec[i], g[i][0], params.twist)
                     for i in range(2 * params.l)
                 ],
                 axis=0,
             ),
             np.sum(
                 [
-                    PolyMul(decvec[i], g[i][1], params.twist, fft, ifft)
+                    PolyMul(decvec[i], g[i][1], params.twist)
                     for i in range(2 * params.l)
                 ],
                 axis=0,
