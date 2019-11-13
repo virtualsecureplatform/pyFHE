@@ -24,7 +24,7 @@ def PolynomialMulByXai(poly, a, N):
 
 
 def BlindRotateFFT(
-    bkfft, t: np.ndarray, r: np.ndarray, params: lweParams
+    bkfft, t: np.ndarray, r: np.ndarray, params: lweParams, fft, ifft
 ):  # t is TLWE and r is TRLWE polynomial to rotate and t is TLWE
     bara = np.uint32(np.round(np.double(t) * (2 ** -32 * 2 * params.N)))
     acc = np.array(
@@ -46,6 +46,8 @@ def BlindRotateFFT(
             ),
             acc,
             params,
+            fft,
+            ifft
         )
     return acc
 
@@ -54,7 +56,7 @@ def GateBootstrappingTLWE2TLWEFFT(t, ck: CloudKey):
     testvec = np.array(
         [np.zeros(ck.params.N), np.full(ck.params.N, dtot32(2 ** -3))]
     )  # This is same as original implemetation of TFHE.
-    return SampleExtractIndex(BlindRotateFFT(ck.bkfft, t, testvec, ck.params), 0)
+    return SampleExtractIndex(BlindRotateFFT(ck.bkfft, t, testvec, ck.params, ck.fft, ck.ifft), 0)
 
 
 def GateBootstrappingFFT(tlwe, ck):

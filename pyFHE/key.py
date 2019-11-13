@@ -1,4 +1,5 @@
 import numpy as np
+import pyfftw
 from secrets import randbits
 from .mulfft import TwistGen
 from .tlwe import tlweSymEncrypt
@@ -88,6 +89,8 @@ class CloudKey:
                 ]
             )
         )
+        self.fft  = [pyfftw.builders.fft(pyfftw.empty_aligned(sk.params.N//2, dtype='complex128')),pyfftw.builders.fft(pyfftw.empty_aligned((2*sk.params.l,sk.params.N//2), dtype='complex128'),axis = 1)]
+        self.ifft = [pyfftw.builders.ifft(pyfftw.empty_aligned(sk.params.N//2, dtype='complex128')),pyfftw.builders.fft(pyfftw.empty_aligned((2,sk.params.N//2), dtype='complex128'),axis = 1)]
         self.bkfft = np.array(
             [
                 trgswfftSymEncrypt(
@@ -98,6 +101,8 @@ class CloudKey:
                     sk.params.h,
                     sk.key.trlwe,
                     sk.params.twist,
+                    self.fft,
+                    self.ifft
                 )
                 for i in range(sk.params.n)
             ]
