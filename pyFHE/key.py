@@ -110,6 +110,6 @@ class CloudKey:
         self.params = sk.params
 
 class FFTplans:
-    def __init__(self,ck:CloudKey):
+    def __init__(self,ck):
         self.fft  = [pyfftw.builders.fft(pyfftw.empty_aligned(ck.params.N//2, dtype='complex128')),pyfftw.builders.fft(pyfftw.empty_aligned((2*ck.params.l,ck.params.N//2), dtype='complex128'),axis = 1)]
         self.ifft = [pyfftw.builders.ifft(pyfftw.empty_aligned(ck.params.N//2, dtype='complex128')),pyfftw.builders.fft(pyfftw.empty_aligned((2,ck.params.N//2), dtype='complex128'),axis = 1)]

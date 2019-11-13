@@ -11,7 +11,6 @@ def Decomposition(trlwe, params):
     t -= params.Bg // 2
     return np.concatenate([t[:, 0], t[:, 1]])
 
-
 def DecompositionFFT(r, params, fft):
     decvec = Decomposition(r, params)
     return TwistFFT(np.int32(decvec), params.twist, fft, dim=2)
