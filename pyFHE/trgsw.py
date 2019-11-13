@@ -6,10 +6,10 @@ from .utils import dtot32
 # Gadget Decomposition.
 def Decomposition(trlwe, params):
     t = trlwe + params.offset
-    t = np.array([t>>i for i in params.decbit])
+    t = np.array([t >> i for i in params.decbit])
     t &= params.Bg - 1
     t -= params.Bg // 2
-    return np.concatenate([t[:,0],t[:,1]])
+    return np.concatenate([t[:, 0], t[:, 1]])
 
 
 def DecompositionFFT(r, params, fft):

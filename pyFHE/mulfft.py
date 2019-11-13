@@ -19,7 +19,7 @@ def TwistFFT(a, twist, fft, dim=1):
         t *= twist
         return fft[dim-1](t)
     elif dim == 2:
-        t = np.empty((b.shape[0],Ns2), dtype=np.complex128)
+        t = np.empty((b.shape[0], Ns2), dtype=np.complex128)
         t.real = b[:, :Ns2]
         t.imag = b[:, Ns2 : 2 * Ns2]
         t *= twist
