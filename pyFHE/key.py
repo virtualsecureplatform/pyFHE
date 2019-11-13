@@ -3,7 +3,7 @@ import pyfftw
 from secrets import randbits
 from .mulfft import TwistGen,TwistGenLong
 from .tlwe import tlweSymEncrypt
-from .trgsw import trgswfftSymEncrypt
+from .trgsw import trgswfftSymEncrypt, trgswfftSymEncryptlvl2
 
 
 class lweKey:
@@ -99,6 +99,7 @@ class CloudKey:
                 ]
             )
         )
+
         self.bkfft = np.array(
             [
                 trgswfftSymEncrypt(
@@ -113,4 +114,20 @@ class CloudKey:
                 for i in range(sk.params.n)
             ]
         )
+
+        self.bklvl2fft = np.array(
+            [
+                trgswfftSymEncryptlvl2(
+                    np.uint64(
+                        np.concatenate([[sk.key.tlwe[i]], np.zeros(sk.params.nbar - 1)])
+                    ),
+                    sk.params.bklvl02alpha,
+                    sk.params.hbar,
+                    sk.key.lvl2,
+                    sk.params.twistlvl2long
+                )
+                for i in range(sk.params.n)
+            ]
+        )
+
         self.params = sk.params

@@ -6,7 +6,7 @@ import numpy as np
 import time
 
 def test():
-    sk = SecretKey(500, 2.44e-5, 1024, 2, 10, 3.73e-9, 8, 2, 2.44e-5)
+    sk = SecretKey(500,2.44e-5,1024,2,10,3.73e-9,8,2,2.44e-5,2048,4,9,2**-44,10,3)
     ck = CloudKey(sk)
     pa = np.random.binomial(1, 0.5)
     pb = np.random.binomial(1, 0.5)

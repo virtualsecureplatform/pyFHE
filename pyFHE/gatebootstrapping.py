@@ -1,4 +1,4 @@
-from .detwfa import CMUXFFT
+from .detwfa import CMUXFFT, CMUXFFTlvl2
 from .keyswitch import IdentityKeySwitch
 from .trlwe import SampleExtractIndex, trlweSymEncrypt, trlweSymDecrypt
 from .key import lweParams, CloudKey
@@ -67,22 +67,22 @@ def BlindRotateFFT(
 def BlindRotateFFTlvl2(
     bkfft, tlwe: np.ndarray, trlwe: np.ndarray, params: lweParams
 ):
-    bara = np.uint32(np.round(np.double(t) * (2 ** -32 * 2 * params.N)))
+    bara = np.uint32(np.round(np.double(tlwe) * (2.0 ** -32 * 2 * params.nbar)))
     acc = np.array(
         [
-            PolynomialMulByXailvl2(trlwe[0], 2 * params.nbar - bara[-1], params.N),
-            PolynomialMulByXailvl2(trlwe[1], 2 * params.nbar - bara[-1], params.N),
+            PolynomialMulByXailvl2(trlwe[0], 2 * params.nbar - bara[-1], params.nbar),
+            PolynomialMulByXailvl2(trlwe[1], 2 * params.nbar - bara[-1], params.nbar),
         ]
     )
     for i in range(params.n):
         if bara[i] == 0:
             continue
-        acc = CMUXFFT(
+        acc = CMUXFFTlvl2(
             bkfft[i],
             np.array(
                 [
-                    PolynomialMulByXailvl2(acc[0], bara[i], params.N),
-                    PolynomialMulByXailvl2(acc[1], bara[i], params.N),
+                    PolynomialMulByXailvl2(acc[0], bara[i], params.nbar),
+                    PolynomialMulByXailvl2(acc[1], bara[i], params.nbar),
                 ]
             ),
             acc,
