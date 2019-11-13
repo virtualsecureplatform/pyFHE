@@ -22,6 +22,21 @@ def PolynomialMulByXai(poly, a, N):
         t = np.concatenate([l0, l1])
         return np.uint32(t)
 
+def PolynomialMulByXailvl2(poly,a,N):
+    a = a.item()
+    if a == 0:
+        return poly
+    elif a < N:
+        l0 = -poly[N - a : N]
+        l1 = poly[0 : N - a]
+        t = np.concatenate([l0, l1])
+        return np.uint64(t)
+    else:
+        aa = a - N
+        l0 = poly[N - aa : N]
+        l1 = -poly[0 : N - aa]
+        t = np.concatenate([l0, l1])
+        return np.uint64(t)
 
 def BlindRotateFFT(
     bkfft, t: np.ndarray, r: np.ndarray, params: lweParams
@@ -49,6 +64,31 @@ def BlindRotateFFT(
         )
     return acc
 
+def BlindRotateFFTlvl2(
+    bkfft, tlwe: np.ndarray, trlwe: np.ndarray, params: lweParams
+):
+    bara = np.uint32(np.round(np.double(t) * (2 ** -32 * 2 * params.N)))
+    acc = np.array(
+        [
+            PolynomialMulByXailvl2(trlwe[0], 2 * params.nbar - bara[-1], params.N),
+            PolynomialMulByXailvl2(trlwe[1], 2 * params.nbar - bara[-1], params.N),
+        ]
+    )
+    for i in range(params.n):
+        if bara[i] == 0:
+            continue
+        acc = CMUXFFT(
+            bkfft[i],
+            np.array(
+                [
+                    PolynomialMulByXailvl2(acc[0], bara[i], params.N),
+                    PolynomialMulByXailvl2(acc[1], bara[i], params.N),
+                ]
+            ),
+            acc,
+            params,
+        )
+    return acc
 
 def GateBootstrappingTLWE2TLWEFFT(t, ck: CloudKey):
     testvec = np.array(
