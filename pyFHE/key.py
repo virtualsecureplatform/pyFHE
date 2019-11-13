@@ -46,10 +46,9 @@ class lweParams:
         self.Bgbar = 1 << Bgbitbar
         self.Bgbitbar = Bgbitbar
         self.bklvl02alpha = bklvl02alpha
-        self.hbar = np.array([self.Bgbar**(-(i+1)) for i in range(lbar)],dtype = np.double)
-        self.offset = np.uint32(self.Bg/2 * np.sum(2**32 * self.h))
+        self.hbar = np.array([np.double(self.Bgbar)**(-(i+1)) for i in range(lbar)],dtype = np.double)
         self.offsetlvl2 = np.uint64(self.Bgbar/2 * np.sum(2**64 * self.hbar))
-        self.decblvl2 = np.array([(2**(-64)) * (self.Bgbar**(i+1)) for i in range(lbar)], dtype = np.double)
+        self.decbitlvl2 = [64 - (p + 1) * Bgbitbar for p in range(lbar)]
         self.tbar = tbar
         self.twistlvl2 = TwistGen(nbar)
         self.twistlvl2long = TwistGenLong(nbar)
@@ -71,7 +70,6 @@ class SecretKey:
     ):  # Modify this to change parameter
         self.params = lweParams(n, alpha, N, l, Bgbit, bkalpha, t, basebit, ksalpha,nbar,lbar,Bgbitbar,bklvl02alpha,tbar,basebitlvl21)
         self.key = lweKey(n, N,nbar)
-
 
 class CloudKey:
     def __init__(self, sk: SecretKey):

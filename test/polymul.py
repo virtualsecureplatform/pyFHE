@@ -1,6 +1,6 @@
 from pyFHE.mulfft import PolyMul, TwistGen,TwistFFT,TwistIFFT
 from pyFHE.utils import dtot32
-from pyFHE.key import FFTplans,SecretKey
+from pyFHE.key import SecretKey
 import numpy as np
 
 N = 1024

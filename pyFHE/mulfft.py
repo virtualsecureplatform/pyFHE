@@ -74,7 +74,7 @@ def PolyMullvl2Long(a,b,twist):
                 np.multiply(TwistFFTlong(np.int64(a), twist), TwistFFTlong(np.int64(b), twist)),
                 twist,
             )
-        )
+        )%np.float128(2)**64
     )
 
 
