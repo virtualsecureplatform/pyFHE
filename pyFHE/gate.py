@@ -23,13 +23,13 @@ def HomAND(ca, cb, ck: CloudKey, plan: FFTplans):
 
 def HomXOR(ca, cb, ck: CloudKey, plan: FFTplans):
     return GateBootstrappingFFT(
-        np.uint32(np.append(np.zeros(ck.params.n), 2 ** 30)) + 2 * (ca + cb), ck
+        np.uint32(np.append(np.zeros(ck.params.n), 2 ** 30)) + 2 * (ca + cb), ck, plan
     )
 
 
 def HomXNOR(ca, cb, ck: CloudKey, plan: FFTplans):
     return GateBootstrappingFFT(
-        np.uint32(np.append(np.zeros(ck.params.n), -(2 ** 30))) - 2 * (ca + cb), ck
+        np.uint32(np.append(np.zeros(ck.params.n), -(2 ** 30))) - 2 * (ca + cb), ck, plan
     )
 
 

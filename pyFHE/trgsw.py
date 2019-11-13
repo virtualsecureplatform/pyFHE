@@ -43,6 +43,7 @@ def trgswfftExternalProduct(trgswfft, trlwe, params, fft, ifft):
     # if l is small enough, adding before IFFT doesn't make much noise and reduce number of IFFT which is a very heavy function.
     t = decvecfft.reshape(4, 1, 512) * trgswfft
     t = t.sum(axis=0)
+    print(t.shape)
     t = TwistIFFT(t, params.twist, ifft, axis=1)
     t = np.uint32(t)
     return t

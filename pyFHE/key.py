@@ -34,9 +34,6 @@ class lweParams:
         self.bkalpha = bkalpha
         self.h = np.array([self.Bg ** (-(i + 1)) for i in range(l)], dtype=np.double)
         self.offset = np.uint32(self.Bg / 2 * np.sum(2 ** 32 * self.h))
-        self.decb = np.array(
-            [(2 ** (-32)) * (self.Bg ** (i + 1)) for i in range(l)], dtype=np.double
-        )
         self.decbit = [32 - (p + 1) * Bgbit for p in range(l)]
         self.twist = TwistGen(N)
         self.t = t

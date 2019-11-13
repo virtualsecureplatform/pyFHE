@@ -22,7 +22,6 @@ for i in range(100):
     )
     y = trgswfftExternalProduct(A, x, sk.params, plan.fft, plan.ifft)
     if np.sum(trlweSymDecrypt(y, sk.key.trlwe, sk.params.twist, plan.fft, plan.ifft)) != len(y[0]):
-        print(sk.params.decb)
         print(trlweSymDecrypt(y, sk.key.trlwe, sk.params.twist,plan.fft,plan.ifft))
         print(np.uint32(y))
         print(i)
