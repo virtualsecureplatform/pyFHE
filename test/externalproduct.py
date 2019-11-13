@@ -3,7 +3,6 @@ from pyFHE.trgsw import trgswfftSymEncrypt, trgswfftExternalProduct
 from pyFHE.key import SecretKey, FFTplans
 from pyFHE.utils import dtot32
 import numpy as np
-import pyfftw
 
 np.set_printoptions(threshold=2000)
 for i in range(100):

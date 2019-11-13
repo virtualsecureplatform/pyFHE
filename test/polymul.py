@@ -2,13 +2,10 @@ from pyFHE.mulfft import PolyMul, TwistGen,TwistFFT,TwistIFFT
 from pyFHE.utils import dtot32
 from pyFHE.key import FFTplans,SecretKey
 import numpy as np
-import pyfftw
 
 N = 1024
 Bg = 1024
 twist = TwistGen(N)
-sk = SecretKey(500, 2 ** (-7), N, 2, 10, 3.73e-9, 8, 2, 2.43e-5)
-pyfftw.interfaces.cache.enable()
 for i in range(10000):
     a = dtot32(np.random.random(N)) * 2 ** -32
     b = np.int32(np.random.randint(-Bg // 2, Bg // 2, N))  # choose max = Bg

@@ -4,10 +4,7 @@ from pyFHE.gate import HomNAND
 
 import numpy as np
 import time
-import pyfftw
 
-
-pyfftw.interfaces.cache.enable()
 def test():
     sk = SecretKey(500, 2.44e-5, 1024, 2, 10, 3.73e-9, 8, 2, 2.44e-5)
     ck = CloudKey(sk)

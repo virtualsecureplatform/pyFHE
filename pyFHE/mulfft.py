@@ -1,11 +1,8 @@
 from .utils import dtot32
 import numpy as np
-import pyfftw
 
 # Reference https://math.stackexchange.com/questions/1435448/negacyclic-fft-multiplication
 
-
-pyfftw.interfaces.cache.enable()
 def TwistGen(N):
     return np.array([np.exp(1j * k * np.pi / N) for k in range(N // 2)])
 
