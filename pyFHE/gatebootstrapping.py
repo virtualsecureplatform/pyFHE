@@ -52,15 +52,15 @@ def BlindRotateFFT(
     return acc
 
 
-def GateBootstrappingTLWE2TLWEFFT(t, ck: CloudKey):
+def GateBootstrappingTLWE2TLWEFFT(t, ck: CloudKey, plan):
     testvec = np.array(
         [np.zeros(ck.params.N), np.full(ck.params.N, dtot32(2 ** -3))]
     )  # This is same as original implemetation of TFHE.
-    return SampleExtractIndex(BlindRotateFFT(ck.bkfft, t, testvec, ck.params, ck.fft, ck.ifft), 0)
+    return SampleExtractIndex(BlindRotateFFT(ck.bkfft, t, testvec, ck.params, plan.fft, plan.ifft), 0)
 
 
-def GateBootstrappingFFT(tlwe, ck):
-    return IdentityKeySwitch(GateBootstrappingTLWE2TLWEFFT(tlwe, ck), ck)
+def GateBootstrappingFFT(tlwe, ck:CloudKey, plan):
+    return IdentityKeySwitch(GateBootstrappingTLWE2TLWEFFT(tlwe, ck, plan), ck)
 
 
 # These are not optimized functions. Just for making reader easier to understand the algorithm.

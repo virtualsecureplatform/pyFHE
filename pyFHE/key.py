@@ -89,8 +89,8 @@ class CloudKey:
                 ]
             )
         )
-        self.fft  = [pyfftw.builders.fft(pyfftw.empty_aligned(sk.params.N//2, dtype='complex128')),pyfftw.builders.fft(pyfftw.empty_aligned((2*sk.params.l,sk.params.N//2), dtype='complex128'),axis = 1)]
-        self.ifft = [pyfftw.builders.ifft(pyfftw.empty_aligned(sk.params.N//2, dtype='complex128')),pyfftw.builders.fft(pyfftw.empty_aligned((2,sk.params.N//2), dtype='complex128'),axis = 1)]
+        fft = [pyfftw.builders.fft(pyfftw.empty_aligned(sk.params.N//2, dtype='complex128')),pyfftw.builders.fft(pyfftw.empty_aligned((2*sk.params.l,sk.params.N//2), dtype='complex128'),axis = 1)]
+        ifft = [pyfftw.builders.ifft(pyfftw.empty_aligned(sk.params.N//2, dtype='complex128')),pyfftw.builders.fft(pyfftw.empty_aligned((2,sk.params.N//2), dtype='complex128'),axis = 1)]
         self.bkfft = np.array(
             [
                 trgswfftSymEncrypt(
@@ -101,10 +101,15 @@ class CloudKey:
                     sk.params.h,
                     sk.key.trlwe,
                     sk.params.twist,
-                    self.fft,
-                    self.ifft
+                    fft,
+                    ifft
                 )
                 for i in range(sk.params.n)
             ]
         )
         self.params = sk.params
+
+class FFTplans:
+    def __init__(self,ck:CloudKey):
+        self.fft  = [pyfftw.builders.fft(pyfftw.empty_aligned(ck.params.N//2, dtype='complex128')),pyfftw.builders.fft(pyfftw.empty_aligned((2*ck.params.l,ck.params.N//2), dtype='complex128'),axis = 1)]
+        self.ifft = [pyfftw.builders.ifft(pyfftw.empty_aligned(ck.params.N//2, dtype='complex128')),pyfftw.builders.fft(pyfftw.empty_aligned((2,ck.params.N//2), dtype='complex128'),axis = 1)]
