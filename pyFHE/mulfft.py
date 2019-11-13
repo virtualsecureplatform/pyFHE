@@ -7,6 +7,7 @@ import numpy as np
 def TwistGen(N):
     return np.array([np.exp(1j * k * np.pi / N) for k in range(N // 2)])
 
+
 def TwistFFT(a, twist, dim=1):
     Ns2 = len(twist)
     b = np.double(a)
@@ -18,11 +19,12 @@ def TwistFFT(a, twist, dim=1):
         t *= twist
         return np.fft.fft(t)
     elif dim == 2:
-        t = np.empty((b.shape[0],Ns2), dtype=np.complex128)
+        t = np.empty((b.shape[0], Ns2), dtype=np.complex128)
         t.real = b[:, :Ns2]
         t.imag = b[:, Ns2 : 2 * Ns2]
         t *= twist
         return np.fft.fft(t, axis=1)
+
 
 def TwistIFFT(a, twist, axis=None):
     b = np.multiply(np.fft.ifft(a, axis=(axis or -1)), np.conjugate(twist))

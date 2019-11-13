@@ -3,6 +3,7 @@ from .keyswitch import IdentityKeySwitch
 from .key import CloudKey
 import numpy as np
 
+
 def HomNAND(ca, cb, ck: CloudKey):
     return GateBootstrappingFFT(
         np.uint32(np.append(np.zeros(ck.params.n), 2 ** 29)) - ca - cb, ck
