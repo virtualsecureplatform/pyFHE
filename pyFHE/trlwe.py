@@ -1,17 +1,20 @@
 from .mulfft import PolyMul,PolyMullvl2Long
 from .utils import gaussian32, dtot32, gaussian64, dtot64
 from secrets import randbits
+import os
 import numpy as np
 
 
 def trlweSymEncrypt(p, alpha, key, twist):
-    a = np.array([randbits(32) for i in range(len(key))], dtype=np.uint32)
+    # a = np.array([randbits(32) for i in range(len(key))], dtype=np.uint32)
+    a = np.frombuffer(os.urandom(len(key) * 4), dtype=np.uint32)
     b = gaussian32(dtot32(p), alpha, len(key))
     b += PolyMul(a, key, twist)
     return np.array([a, b])
 
 def trlweSymEncryptlvl2(p,alpha,key, twistlong):
-    a = np.array([randbits(64) for i in range(len(key))], dtype = np.uint64)
+    # a = np.array([randbits(64) for i in range(len(key))], dtype = np.uint64)
+    a = np.frombuffer(os.urandom(len(key) * 8), dtype=np.uint64)
     b = gaussian64(dtot64(p),alpha,len(key))
     b += PolyMullvl2Long(a,key,twistlong)
     return np.array([a,b])

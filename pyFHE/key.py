@@ -3,6 +3,7 @@ import pyfftw
 from secrets import randbits
 from .mulfft import TwistGen,TwistGenLong
 from .tlwe import tlweSymEncrypt
+from .trlwe import trlweSymEncrypt, trlweSymEncryptlvl2
 from .trgsw import trgswfftSymEncrypt, trgswfftSymEncryptlvl2
 
 
@@ -24,7 +25,7 @@ class lweParams:
         t: int,
         basebit: int,
         ksalpha: float,
-        nbar:int,lbar:int,Bgbitbar:int,bklvl02alpha:float, tbar:int, basebitlvl21:int
+        nbar:int,lbar:int,Bgbitbar:int,bklvl02alpha:float, tbar:int, basebitlvl21:int, privkskalpha:float
     ):
         self.n = n
         self.alpha = alpha
@@ -53,6 +54,7 @@ class lweParams:
         self.twistlvl2 = TwistGen(nbar)
         self.twistlvl2long = TwistGenLong(nbar)
         self.basebitlvl21 = basebitlvl21
+        self.privkskalpha = privkskalpha
 
 class SecretKey:
     def __init__(
@@ -66,9 +68,9 @@ class SecretKey:
         t: int,
         basebit: int,
         ksalpha: float,
-        nbar:int,lbar:int,Bgbitbar:int,bklvl02alpha:float, tbar:int, basebitlvl21:int
+        nbar:int,lbar:int,Bgbitbar:int,bklvl02alpha:float, tbar:int, basebitlvl21:int, privkskalpha:float
     ):  # Modify this to change parameter
-        self.params = lweParams(n, alpha, N, l, Bgbit, bkalpha, t, basebit, ksalpha,nbar,lbar,Bgbitbar,bklvl02alpha,tbar,basebitlvl21)
+        self.params = lweParams(n, alpha, N, l, Bgbit, bkalpha, t, basebit, ksalpha,nbar,lbar,Bgbitbar,bklvl02alpha,tbar,basebitlvl21,privkskalpha)
         self.key = lweKey(n, N,nbar)
 
 class CloudKey:
@@ -99,6 +101,40 @@ class CloudKey:
                 ]
             )
         )
+        
+        key = np.append(np.int32(sk.key.lvl2),np.int32(-1))
+
+        self.privksk = np.uint32(
+            np.array(
+                [
+                    np.array([
+                        np.array([
+                            np.concatenate(
+                                [
+                                    [np.zeros((2,sk.params.N),dtype=np.uint32)],
+                                    [
+                                        trlweSymEncrypt(
+                                            np.zeros(sk.params.N),
+                                            sk.params.privkskalpha,
+                                            sk.key.trlwe,
+                                            sk.params.twist
+                                        )
+                                        + np.uint32(np.roll(
+                                            np.concatenate([[u*key[i] << (32-(j+1)*sk.params.basebitlvl21)],np.zeros(2*sk.params.N-1)]),
+                                            z*sk.params.N
+                                            ).reshape(2,sk.params.N))
+                                        for u in range(1, 2**sk.params.basebitlvl21)
+                                    ]
+                                ]
+                            )
+                            for j in range(sk.params.tbar)
+                        ])
+                        for i in range(sk.params.nbar + 1)
+                    ])
+                    for z in range(2)
+                ]
+            )
+        )
 
         self.bkfft = np.array(
             [
@@ -115,7 +151,7 @@ class CloudKey:
             ]
         )
 
-        self.bklvl2fft = np.array(
+        self.bklvl02fft = np.array(
             [
                 trgswfftSymEncryptlvl2(
                     np.uint64(

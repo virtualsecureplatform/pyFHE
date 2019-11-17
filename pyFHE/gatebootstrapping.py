@@ -2,7 +2,7 @@ from .detwfa import CMUXFFT, CMUXFFTlvl2
 from .keyswitch import IdentityKeySwitch
 from .trlwe import SampleExtractIndex, trlweSymEncrypt, trlweSymDecrypt
 from .key import lweParams, CloudKey
-from .utils import dtot32
+from .utils import dtot32,dtot64
 import numpy as np
 
 
@@ -64,7 +64,7 @@ def BlindRotateFFT(
         )
     return acc
 
-def BlindRotateFFTlvl2(
+def BlindRotatelvl2FFT(
     bkfft, tlwe: np.ndarray, trlwe: np.ndarray, params: lweParams
 ):
     bara = np.uint32(np.round(np.double(tlwe) * (2.0 ** -32 * 2 * params.nbar)))
@@ -90,12 +90,18 @@ def BlindRotateFFTlvl2(
         )
     return acc
 
-def GateBootstrappingTLWE2TLWEFFT(t, ck: CloudKey):
+def GateBootstrappingTLWE2TLWEFFT(tlwe, ck: CloudKey):
     testvec = np.array(
         [np.zeros(ck.params.N), np.full(ck.params.N, dtot32(2 ** -3))]
     )  # This is same as original implemetation of TFHE.
-    return SampleExtractIndex(BlindRotateFFT(ck.bkfft, t, testvec, ck.params), 0)
+    return SampleExtractIndex(BlindRotateFFT(ck.bkfft, tlwe, testvec, ck.params), 0)
 
+def GateBootstrappingTLWE2TLWElvl2FFT(tlwe, ck: CloudKey, mu):
+    t64mu2 = dtot64(mu/2)
+    testvec = np.array(
+        [np.zeros(ck.params.nbar), np.full(ck.params.nbar,t64mu2)]
+    )  # This is same as original implemetation of TFHE.
+    return SampleExtractIndex(BlindRotatelvl2FFT(ck.bklvl02fft, tlwe, testvec, ck.params), 0) + np.append(np.zeros(ck.params.nbar,dtype=np.uint64),t64mu2)
 
 def GateBootstrappingFFT(tlwe, ck:CloudKey):
     return IdentityKeySwitch(GateBootstrappingTLWE2TLWEFFT(tlwe, ck), ck)
