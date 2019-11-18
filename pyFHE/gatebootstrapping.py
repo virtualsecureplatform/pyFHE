@@ -1,5 +1,5 @@
 from .detwfa import CMUXFFT, CMUXFFTlvl2
-from .keyswitch import IdentityKeySwitch
+from .keyswitch import IdentityKeySwitch, TLWE2TRLWEprivateKeySwitch
 from .trlwe import SampleExtractIndex, trlweSymEncrypt, trlweSymDecrypt
 from .key import lweParams, CloudKey
 from .utils import dtot32,dtot64
@@ -106,6 +106,9 @@ def GateBootstrappingTLWE2TLWElvl2FFT(tlwe, ck: CloudKey, mu):
 def GateBootstrappingFFT(tlwe, ck:CloudKey):
     return IdentityKeySwitch(GateBootstrappingTLWE2TLWEFFT(tlwe, ck), ck)
 
+def CircuitBootstrapping(tlwe,ck:CloudKey):
+    tlwelvl2 = [GateBootstrappingTLWE2TLWElvl2FFT(tlwe,ck,ck.params.Bg**-(w+1)) for w in range(ck.params.l)]
+    return np.vstack([[TLWE2TRLWEprivateKeySwitch(t,ck,u) for t in tlwelvl2] for u in range(2)])
 
 # These are not optimized functions. Just for making reader easier to understand the algorithm.
 # def BlindRotate(bk,t:np.ndarray, r:np.ndarray,params:lweParams):#t is TLWE and r is TRLWE polynomial to rotate and t is TLWE
