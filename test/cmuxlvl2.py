@@ -21,10 +21,10 @@ for i in range(1000):
         sk.params.bklvl02alpha,
         sk.params.hbar,
         sk.key.lvl2,
-        sk.params.twistlvl2long,
+        sk.params.twistlvl2,
+        sk.params.twistlvl2long
     )
     y =CMUXFFTlvl2(CFFT, d1, d0, sk.params)
-    print(y)
     z = trlweSymDecryptlvl2(y, sk.key.lvl2, sk.params.twistlvl2long)
     if np.any(c * (p1 - p0) + p0 != z):
         print(i)

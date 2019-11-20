@@ -14,11 +14,8 @@ def test():
     x = tlweSymEncrypt((p * 2 + -1) * (2 ** -3), sk.params.alpha, sk.key.tlwe)
     mu = 1/sk.params.Bgbar
     y = GateBootstrappingTLWE2TLWElvl2FFT(x, ck, mu)
-    print(y)
     z = np.int64(y[-1] - np.dot(y[:-1], sk.key.lvl2))
     np.set_printoptions(threshold=2000)
-    print(i)
-    print(p*mu)
     if abs(p*mu - z*2**-64)>mu/2:
         print(p*mu)
         print(z)

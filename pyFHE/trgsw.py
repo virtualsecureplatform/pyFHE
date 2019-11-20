@@ -24,7 +24,7 @@ def DecompositionFFT(r, params):
 
 def DecompositionFFTlvl2(r, params):
     decvec = Decompositionlvl2(r, params)
-    return TwistFFTlong(np.int64(decvec), params.twistlvl2long, dim=2)
+    return TwistFFT(np.int64(decvec), params.twistlvl2, dim=2)
 
 def trgswSymEncrypt(p, alpha: float, h, key, twist):
     l = len(h)
@@ -55,11 +55,11 @@ def trgswfftSymEncrypt(p, alpha: float, h, key, twist):
         ]
     )
 
-def trgswfftSymEncryptlvl2(p, alpha: float, h, key, twistlong):
+def trgswfftSymEncryptlvl2(p, alpha: float, h, key, twist,twistlong):
     trgsw = np.int64(trgswSymEncryptlvl2(p, alpha, h, key, twistlong))
     return np.array(
         [
-            np.array([TwistFFTlong(trgsw[i][j], twistlong) for j in range(2)])
+            np.array([TwistFFT(trgsw[i][j], twist) for j in range(2)])
             for i in range(2 * len(h))
         ]
     )
@@ -78,8 +78,8 @@ def trgswfftExternalProductlvl2(trgswfft, trlwe, params):
     # if l is small enough, adding before IFFT doesn't make much noise and reduce number of IFFT which is a very heavy function.
     t = decvecfft.reshape(2*params.lbar, 1, params.nbar//2) * trgswfft
     t = t.sum(axis=0)
-    t = TwistIFFTlong(t, params.twistlvl2long, axis=1)
-    t = np.uint64(t%np.float128(2.0)**64)
+    t = TwistIFFT(t, params.twistlvl2, axis=1)
+    t = np.uint64(t%2.0**64)
     return t
 
 def trgswExternalProductlvl2(trgsw, trlwe, params):

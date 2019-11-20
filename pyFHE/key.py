@@ -160,6 +160,7 @@ class CloudKey:
                     sk.params.bklvl02alpha,
                     sk.params.hbar,
                     sk.key.lvl2,
+                    sk.params.twistlvl2,
                     sk.params.twistlvl2long
                 )
                 for i in range(sk.params.n)
