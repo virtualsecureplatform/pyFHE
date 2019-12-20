@@ -21,12 +21,10 @@ def test():
     np.set_printoptions(threshold=2000)
     if (pb if pa else pc) != y:
         print("FAILED")
-        print(
-            tlweSymDecrypt(
-                np.uint32(np.append(np.zeros(ck.params.n), 2 ** 29)) - ca - cb,
-                sk.key.tlwe,
-            )
-        )
+        print(pa)
+        print(pb)
+        print(pc)
+        print(pb if pa else pc)
         print(y)
         exit()
 

@@ -65,12 +65,12 @@ def HomORYN(ca, cb, ck: CloudKey):
 
 def HomMUX(a, b, c, ck):
     return IdentityKeySwitch(
-        np.append(np.zeros(ck.params.n), 2 ** 29)
+        np.uint32(np.append(np.zeros(ck.params.N), np.uint32(2 ** 29)))
         + GateBootstrappingTLWE2TLWEFFT(
-            np.append(np.zeros(ck.params.n), np.uint32(-(2 ** 29))) + a + b, ck
+            np.uint32(np.append(np.zeros(ck.params.n), np.uint32(-(2 ** 29)))) + a + b, ck
         )
         + GateBootstrappingTLWE2TLWEFFT(
-            np.append(np.zeros(ck.params.n), np.uint32(-(2 ** 29))) - a + c, ck
+            np.uint32(np.append(np.zeros(ck.params.n), -(2 ** 29))) - a + c, ck
         ),
         ck,
     )
