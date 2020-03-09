@@ -46,18 +46,18 @@ def trgswExternalProduct(g,r,params):
 
 #Function
 def CMUX(C,d1,d0,params:lweParams):
-    return trgswExternalProdcut(C,d1-d0,params)+d0
+    return trgswExternalProduct(C,d1-d0,params)+d0
 
 #Function
 def BlindRotate(bk,t:np.ndarray, r:np.ndarray,params:lweParams):#t is TLWE and r is TRLWE polynomial to rotate and t is TLWE
     bara = np.uint32(np.round(np.double(t) * (2**-32 * 2 * params.N)))
     bara[-1] = 2 * params.N - bara[-1]#こいつだけ特別
     #baraは多分スカラーとして１個ずつ生成するのが良い
-    acc = np.array([PolynomialMulByXai(r[0],bara[-1],params.N),PolynomialMulByXai(r[1],bara[-1],params.N)])
+    acc = np.array([PolynomialMulByXai(r[0],bara[-1]),PolynomialMulByXai(r[1],bara[-1])])
     for i in range(params.n):
         if bara[i] == 0:
             continue 
-        acc = CMUX(bk[i],np.array([PolynomialMulByXai(acc[0],bara[i],params.N),PolynomialMulByXai(acc[1],bara[i],params.N)]),acc,params)#ここうまいことやれば一時変数減らせる？
+        acc = CMUX(bk[i],np.array([PolynomialMulByXai(acc[0],bara[i]),PolynomialMulByXai(acc[1],bara[i])]),acc,params)#ここうまいことやれば一時変数減らせる？
     return acc
 
 #Function
