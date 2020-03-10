@@ -20,17 +20,17 @@ def PolyMulNaieve(a,b):
     for i in  range(len(a)):
         acc += a*rotreg
         rotreg = np.roll(rotreg,1)
-        rotreg[0]*=-1
+        rotreg[0]= np.uint32(-rotreg[0])
     return acc
 
 #Module
 def PolynomialMulByXai(poly,a):
     res = np.roll(poly,a)
-    if(N<a):
-        res[0:a]*=-1
+    if(a<N):
+        res[0:a] = np.uint32(-res[0:a])
     else:
         aa = a-N
-        res[aa:-1]*=-1
+        res[aa:N] = np.uint32(-res[aa:N])
     return res
 
 #Module(たぶんこれスカラーずつやったほうが良い気がするけどここでは配列として表現。アドレス叩き込んだらこの配列と同じ結果が出ればいい)
